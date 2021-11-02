@@ -1,9 +1,21 @@
 import { renderBlock } from './lib.js'
 import { formatDate, getLastDayOfNextMonth, shiftDate } from './date_utils.js';
 
+//const pskPrice = 300
+export const pskPrice = (v: number): number => 300;
+//`0${v}`.slice(-2);
+
 export function renderSearchFormBlock(dateArrival?: Date,
-    dateDeparture?: Date
+    dateDeparture?: Date,
 ): void {
+    //searchItem({
+    ////    'city': city.getAttribute('value'),
+    ////    'checkin': new Date(checkin.getAttribute('value')),
+    ////    'checkout': new Date(checkout.getAttribute('value')),
+    ////    'price': parseInt(price.getAttribute('value'))
+    ////})
+    //return searchItem;
+    //})   
     dateArrival = dateArrival || shiftDate(new Date(), 1)
     const arrival = formatDate(dateArrival);
     const departure = formatDate(dateDeparture || shiftDate(dateArrival, 2));
@@ -36,7 +48,7 @@ export function renderSearchFormBlock(dateArrival?: Date,
           </div>
           <div>
             <label for="max-price">Макс. цена суток</label>
-            <input id="max-price" type="text" value="" name="price" class="max-price" />
+            <input id="max-price" type="text" value="" name="price" class="max-price" pskPrice: price/>
           </div>
           <div>
             <div><button>Найти</button></div>
@@ -46,4 +58,5 @@ export function renderSearchFormBlock(dateArrival?: Date,
     </form>
     `
     )
+    
 }

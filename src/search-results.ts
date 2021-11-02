@@ -1,6 +1,9 @@
 import { renderBlock } from './lib.js'
+import { pskPrice } from './search-form.js'
 
-export function renderSearchStubBlock () {
+console.log('search: '+ pskPrice);
+
+export function renderSearchStubBlock() {
     renderBlock(
         'search-results-block',
         `
@@ -12,7 +15,7 @@ export function renderSearchStubBlock () {
     )
 }
 
-export function renderEmptyOrErrorSearchBlock (reasonMessage) {
+export function renderEmptyOrErrorSearchBlock(reasonMessage) {
     renderBlock(
         'search-results-block',
         `
@@ -24,23 +27,19 @@ export function renderEmptyOrErrorSearchBlock (reasonMessage) {
     )
 }
 
-export function renderSearchResultsBlock () {
-    renderBlock(
-        'search-results-block',
-        `
-    <div class="search-results-header">
-        <p>Результаты поиска</p>
-        <div class="search-results-filter">
-            <span><i class="icon icon-filter"></i> Сортировать:</span>
-            <select>
-                <option selected="">Сначала дешёвые</option>
-                <option selected="">Сначала дорогие</option>
-                <option>Сначала ближе</option>
-            </select>
-        </div>
-    </div>
-    <ul class="results-list">
-      <li class="result">
+export function renderSearchResultsBlock(price: number) {        
+    fetch('http://localhost:3000/places')
+        .then(response => response.text())
+    // укажем тип результата в этом месте
+        .then ((responseText) => {  
+            const arr = responseText.split('}');  
+            for (let i = 1; i < 3; i++) {
+                const arrPsk = arr[i].split('"')
+                console.log('Вошла в цикл '+arrPsk)
+                renderBlock('search-results-block',         
+                    `  
+                    <ul class="results-list">                 
+                    <li class="result">
         <div class="result-container">
           <div class="result-img-container">
             <div class="favorites active"></div>
@@ -48,11 +47,11 @@ export function renderSearchResultsBlock () {
           </div>	
           <div class="result-info">
             <div class="result-info--header">
-              <p>YARD Residence Apart-hotel</p>
-              <p class="price">13000&#8381;</p>
-            </div>
-            <div class="result-info--map"><i class="map-icon"></i> 2.5км от вас</div>
-            <div class="result-info--descr">Комфортный апарт-отель в самом сердце Санкт-Петербрга. К услугам гостей номера с видом на город и бесплатный Wi-Fi.</div>
+              <p>${arrPsk[7]}</p>                            
+              <p class="price">${arrPsk[22].slice(1)}&#8381;</p>
+              <p class="price">${price}&#8381;</p>              
+            </div>           
+            <div class="result-info--descr">${arrPsk[11]}</div>
             <div class="result-info--footer">
               <div>
                 <button>Забронировать</button>
@@ -60,29 +59,11 @@ export function renderSearchResultsBlock () {
             </div>
           </div>
         </div>
-      </li>
-      <li class="result">
-        <div class="result-container">
-          <div class="result-img-container">
-            <div class="favorites"></div>
-            <img class="result-img" src="./img/result-2.png" alt="">
-          </div>	
-          <div class="result-info">
-            <div class="result-info--header">
-              <p>Akyan St.Petersburg</p>
-              <p class="price">13000&#8381;</p>
-            </div>
-            <div class="result-info--map"><i class="map-icon"></i> 1.1км от вас</div>
-            <div class="result-info--descr">Отель Akyan St-Petersburg с бесплатным Wi-Fi на всей территории расположен в историческом здании Санкт-Петербурга.</div>
-            <div class="result-info--footer">
-              <div>
-                <button>Забронировать</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-    </ul>
-    `
-    )
-}
+      </li>           
+      </ul>           
+    `   
+                )
+            }   
+        }) 
+}       
+

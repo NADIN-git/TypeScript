@@ -1,8 +1,8 @@
 import { renderBlock } from './lib.js'
 //import { renderToast } from './lib.js'
-import { toggleFavouriteItem } from './lib.js'
+//import { toggleFavouriteItem } from './lib.js'
 
-//export let changeFavorites = ''
+export let changeFavorites = ''
 
 export function renderSearchStubBlock() {
   renderBlock(
@@ -35,14 +35,24 @@ function plusFetch(name: string) {
 
 
 const noMessage = `
-
+<div class="search-results-header">
+    <p>Результаты поиска</p>
+    <div class="search-results-filter">
+        <span><i class="icon icon-filter"></i> Сортировать:</span>
+        <select>
+            <option selected="">Сначала дешёвые</option>
+            <option selected="">Сначала дорогие</option>
+            <option>Сначала ближе</option>
+        </select>
+    </div>
+</div>
 <div class="result-container">
           <div class="result-img-container">
           <p>Ничего не найдено</p>
           </div>	     
      </div>`
 
-let message = `
+const message = `
 <div class="search-results-header">
     <p>Результаты поиска</p>
     <div class="search-results-filter">
@@ -55,44 +65,36 @@ let message = `
     </div>
 </div>`
 
+interface Place {
+  image: string,
+  name: string,
+  description: string,
+  remoteness: number,
+  bookedDates: number[],
+  price: number,
+}
 
-export function renderSearchResultsBlock(vPrice: number) {  
-
-  interface Place {
-    image: string,
-    name: string,
-    description: string,
-    remoteness: number,
-    bookedDates: number[],
-    price: number,
-  }
-
-  fetch('http://localhost:3000/places')
-    .then(response => response.text())
-    .then((responseText) => {
-      console.log(responseText)      
-      const arr = responseText.split('}');
-      for (let i = 1; i < arr.length; i++) {
-        const arrPsk = arr[i].split('"')        
-        const pricePsk = Number(arrPsk[22].slice(1))
-        if (pricePsk <= vPrice) {
-          //const fImg = "favorites active"
-          const fImg = 'favorites'
-          const inf = 'inf' + String(i)
-          message = message + ` 
+export function renderSearchResultsBlock(vPrice: number, arr: Place[]) {   
+  let pskMessage = message
+  for (let i = 1; i <= 10; i++) {          
+    const pricePsk = arr[i].price
+    console.log(pricePsk)
+    if (pricePsk <= vPrice) {     
+      const fImg = 'favorites'
+      pskMessage = pskMessage + ` 
           <ul class="results-list">                                    
         <li class="result">
         <div class="result-container">
-          <div id="${inf}" class="result-img-container"> 
+          <div class="result-img-container"> 
             <div id="favorites" class="${fImg}"></div>
-            <img class="result-img" src=${arrPsk[15]} alt="">
+            <img class="result-img" src=${arr[i].image} alt="">
           </div>
           <div class="result-info">
             <div class="result-info--header">
-              <p>${arrPsk[7]}</p>                            
-              <p class="price">${arrPsk[22].slice(1)}&#8381;</p>                      
+            <p>${arr[i].name}</p>                            
+            <p class="price">${arr[i].price}&#8381;</p>                      
             </div>           
-            <div class="result-info--descr">${arrPsk[11]}</div>
+            <div class="result-info--descr">${arr[i].description}</div>
             <div class="result-info--footer">
               <div>
                 <button>Забронировать</button>
@@ -103,19 +105,19 @@ export function renderSearchResultsBlock(vPrice: number) {
       </li>
       </ul>
     `
-          plusFetch(message)
-          //const form = document.getElementById('search-results-header');
-          const form = document.getElementById(inf);
-          toggleFavouriteItem(fImg)
-          form.addEventListener('submit', (event) => {
-            event.preventDefault()
-            const favorites = document.getElementById('favorites')    
-            const rfavorites = favorites.getAttribute('value')           
-            console.log('kdfdkgf: ', rfavorites)            
-          })
-        } else {
-          plusFetch(noMessage)
-        }
-      }
-    })
+      plusFetch(pskMessage)
+      //const form = document.getElementById('search-results-header');
+      const favoritesElement = document.getElementById('favorites')
+      favoritesElement.addEventListener('change', function (event) {
+        favoritesElement.setAttribute('value', (event.target as HTMLInputElement).value);
+      })
+      favoritesElement.addEventListener('submit', (event) => {
+        event.preventDefault()
+        changeFavorites = favoritesElement.getAttribute('value')
+        ///console.log("kdfdkgf: ", changeFavorites)
+        //toggleFavouriteItem()
+      })
+    } 
+  }
+    
 }

@@ -1,11 +1,11 @@
 export function toggleFavouriteItem(fImg: string): void {
   localStorage.setItem('favoriteItems', 'fImg');
-  console.log('toggleFavouriteItem')
+  //console.log('toggleFavouriteItem')
 }
 
-export function renderBlock(elementId: string, html: string): void {    
-  const element = document.getElementById(elementId);
-  element.innerHTML = html;
+export function renderBlock(elementId: string, html: string): void {      
+  const element = document.getElementById(elementId)    
+  element.innerHTML = html;  
 }
 
 export function renderToast(message, action) {

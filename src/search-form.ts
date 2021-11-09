@@ -1,6 +1,21 @@
 import { renderBlock } from './lib.js'
 import { formatDate, getLastDayOfNextMonth, shiftDate } from './date_utils.js';
 import { renderSearchResultsBlock } from './search-results.js'
+import {FlatRentSdk, addDays, cloneDate} from './flat-rent-sdk.js'
+
+//const sdk = new FlatRentSdk()
+//const today = new Date()
+
+//sdk.search({
+//  city: 'Санкт-Петербург',
+//  checkInDate: cloneDate(today),
+//  checkOutDate: addDays(cloneDate(today), 1),
+//  priceLimit: 4500
+//})
+//  .then((result) => {
+//    console.log('serach with price limit', result)
+//  })
+
 
 export function renderSearchFormBlock(checkin?: Date, checkout?: Date): void {
   checkin = checkin || shiftDate(new Date(), 1)
@@ -16,16 +31,22 @@ export function renderSearchFormBlock(checkin?: Date, checkout?: Date): void {
     price: number,
   }
 
-  function searchItem(value: SearchFormData): void {
-    //console.log('вошла в searchItem');    
-    //  function searchResultsBlock(value: SearchFormData): void {
-    //let url = 'http://localhost:3030/places?' +
-    //`checkInDate=${dateToUnixStamp(value.checkin)}&` +
-    //  `checkOutDate=${dateToUnixStamp(value.checkout)}&` +
-    //'coordinates=59.9386,30.3141';
-
-    if (value.price != null) {      
-      renderSearchResultsBlock(value.price)     
+  function searchItem(value: SearchFormData): void {    
+    if (value.price != null) { 
+      let arr = []
+      fetch('http://localhost:3000/places')
+        .then(response => response.text())
+        .then((responseText) => {
+          arr = JSON.parse(responseText)
+          console.log(arr)
+          //arr.sort((prev, next) => {
+          //  if ( prev.price < next.price ) return -1;
+          //  if ( prev.price < next.price ) return 1;
+          //});
+          //console.log(arr);          
+          //arr.sort((prev, next) => prev.price - next.price);
+          renderSearchResultsBlock(value.price, arr)      
+        })      
     }
   }
   
@@ -36,14 +57,21 @@ export function renderSearchFormBlock(checkin?: Date, checkout?: Date): void {
       <fieldset class="search-filedset">
         <div class="row">
           <div>
-            <label for="city">Город</label>
+            <label for="city">Город</label>            
             <input id="city" type="text" name="city" disabled value="Санкт-Петербург" />
             <input type="hidden" disabled value="59.9386,30.3141" />
           </div>
-          <!--<div class="providers">
+          <div class="search-results-filter">
+        <span>Поставщик:</span>
+        <select>
+            <option selected="">Поставщик 1</option>
+            <option selected="">Поставщик 2</option>           
+        </select>
+    </div>
+          <div class="providers">
             <label><input type="checkbox" name="provider" value="homy" checked /> Homy</label>
             <label><input type="checkbox" name="provider" value="flat-rent" checked /> FlatRent</label>
-          </div>--!>
+          </div>
         </div>
         <div class="row">
           <div>
@@ -66,7 +94,7 @@ export function renderSearchFormBlock(checkin?: Date, checkout?: Date): void {
     </form>
     `
   )
-  const form = document.getElementById('searchForm');
+  const form = document.getElementById('searchForm')
   const checkinElement = document.getElementById('check-in-date')
   const checkoutElement = document.getElementById('check-out-date')
   const priceElement = document.getElementById('max-price')

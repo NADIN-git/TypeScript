@@ -1,14 +1,20 @@
 export function toggleFavouriteItem(fImg: string): void {
-  localStorage.setItem('favoriteItems', 'fImg');
-  //console.log('toggleFavouriteItem')
+  if (fImg) {
+    localStorage.setItem('favoriteItems', 'fImg');  
+  }
 }
 
 export function renderBlock(elementId: string, html: string): void {      
-  const element = document.getElementById(elementId)    
-  element.innerHTML = html;  
+  const element = document.getElementById(elementId)
+  if (
+    (typeof element === 'object' || typeof element === 'symbol') &&
+    element != null
+  ) {
+    element.innerHTML = html;  
+  }
 }
 
-export function renderToast(message, action) {
+export function renderToast(message: any, action: any) {
   let messageText = '';
 
   if (message != null) {

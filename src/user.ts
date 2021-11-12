@@ -1,16 +1,16 @@
 import { renderBlock } from './lib.js'
 
-export function renderUserBlock(userName: string, avatarSrc: string, favoriteItemsAmount: number): void {
-    const favoritesCaption = favoriteItemsAmount
-        ? `Избранных: ${favoriteItemsAmount}`
-        : 'ничего нет';
-    const heartIcon = favoriteItemsAmount
-        ? 'heart-filled'
-        : 'heart-red';
+export function renderUserBlock(userName: string, avatarSrc: string, favoriteItemsAmount?: number,): void {
+  const favoritesCaption = favoriteItemsAmount
+    ? `Избранных: ${favoriteItemsAmount}`
+    : 'ничего нет';
+  const heartIcon = favoriteItemsAmount
+    ? 'heart-filled'
+    : 'heart-red';
     
-    renderBlock(
-        'user-block',
-        `
+  renderBlock(
+    'user-block',
+    `
     <div class="header-container">
       <img class="avatar" src="${avatarSrc}" alt="${userName}" />
       <div class="info">
@@ -21,5 +21,5 @@ export function renderUserBlock(userName: string, avatarSrc: string, favoriteIte
       </div>
     </div>
     `
-    )
+  )
 }

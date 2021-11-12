@@ -1,43 +1,39 @@
-export function renderBlock (elementId: string, html: string): void {
-    const element = document.getElementById(elementId)
-    element.innerHTML = html
+export function toggleFavouriteItem(fImg: string): void {
+  if (fImg) {
+    localStorage.setItem('favoriteItems', 'fImg');  
+  }
 }
 
-export interface RenderMessage {
-    text: string;
-    type: string;
+export function renderBlock(elementId: string, html: string): void {      
+  const element = document.getElementById(elementId)
+  if (
+    (typeof element === 'object' || typeof element === 'symbol') &&
+    element != null
+  ) {
+    element.innerHTML = html;  
   }
-  
-export interface RenderAction {
-    handler: () => void;
-    name: string;
-  }
-  
-  
-export function renderToast (message?: RenderMessage, action?: RenderAction): void {
-    let messageText = ''
+}
 
-    if (message != null) {
-        messageText = `
+export function renderToast(message: any, action: any) {
+  let messageText = '';
+
+  if (message != null) {
+    messageText = `
       <div id="info-block" class="info-block ${message.type}">
         <p>${message.text}</p>
         <button id="toast-main-action">${action?.name || 'Закрыть'}</button>
       </div>
-    `
-    }
+    `;
+  }
 
-    renderBlock(
-        'toast-block',
-        messageText
-    )
-
-    const button = document.getElementById('toast-main-action')
-    if (button != null) {
-        button.onclick = function () {
-            if (action != null && action.handler != null) {
-                action.handler()
-            }
-            renderToast()
-        }
-    }
+  renderBlock('toast-block', messageText);
+  const button = document.getElementById('toast-main-action');
+  if (button != null) {
+    button.onclick = function () {
+      if (action != null && action.handler != null) {
+        action.handler();
+      }
+      renderToast(null, undefined);
+    };
+  }
 }
